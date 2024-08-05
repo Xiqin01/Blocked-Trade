@@ -26,3 +26,5 @@ app.directive('permiss', {
 });
 
 app.mount('#app');
+
+// nihao

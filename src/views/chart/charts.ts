@@ -252,6 +252,9 @@ export const CardDist = ref({
             type: 'category',
             data: ['白卡', '黄卡', '银卡', '金卡', '钻石卡'],
             // name: '卡种',
+            axisLabel: {
+                rotate: -45, // 旋转45度
+            },
         },
     ],
     yAxis: [

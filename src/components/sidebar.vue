@@ -2,7 +2,8 @@
     <div class="sidebar">
         <!-- 背景色/文字颜色在pinia里，可以修改主题的时候修改 -->
         <!-- 激活时的颜色不随主题变化而变化 -->
-         <!--:text-color="sidebar.textColor" -->
+        <!--:text-color="sidebar.textColor" -->
+        <!-- default-active设置用于点击item就按index的路径实现跳转 -->
         <el-menu
             class="sidebar-el-menu"
             :default-active="onRoutes"  

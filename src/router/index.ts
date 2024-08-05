@@ -35,6 +35,15 @@ const routes: RouteRecordRaw[] = [
                     permiss: '11',//页面权限
                 },
                 component: () => import(/* webpackChunkName: "system-user" */ '../views/system/user.vue'),
+            },
+            {
+                path: '/remote',
+                name: 'remote',
+                meta: {
+                    title: '远程连接页面',
+                    permiss: '11',//页面权限
+                },
+                component: () => import( '../views/remote.vue'),
             }
         ],
     },

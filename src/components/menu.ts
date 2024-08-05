@@ -14,6 +14,12 @@ export const menuData: Menus[] = [
         id: '11' // 权限ID
     },
     {
+        index: '/remote',
+        title: '远程连接页面',
+        icon: 'User', // 图标名称
+        id: '11' // 权限ID
+    },
+    {
         id: '6',
         icon: 'DocumentAdd',
         index: '6',

@@ -19,8 +19,7 @@
                         <WalletFilled />
                     </el-icon>
                     <div class="card-content">
-                        <span class="card-num ">{{TrappedAmount}}</span>
-                        <!--<countup class="card-num " :end="6666" />--> <!-- 嵌入一个countup组件，检测动态变化 -->
+                        <countup class="card-num " :end="TrappedAmount" /> <!-- 嵌入一个countup组件，数字动态变化 -->
                         <div>阻滞资金总额</div>
                     </div>
                 </el-card>
@@ -32,8 +31,7 @@
                         <Coin/>
                     </el-icon>
                     <div class="card-content">
-                         <span class="card-num ">{{TrappedCount}}</span>
-                        <!-- <countup class="card-num " :end="168" /> -->  <!-- 检测动态变化的 -->
+                        <countup class="card-num " :end="TrappedCount" />  
                         <div>阻滞资金笔数</div>
                     </div>
                 </el-card>
@@ -144,12 +142,17 @@ let timeType = ref("day");
 let TrappedCount = ref(0);
 let TrappedAmount = ref(0);
 
+
+
 //假装：获取后端的数据
 import DashBoardData from "../../data_example.json"
 console.log(DashBoardData)
 let data_by_day = DashBoardData.data.ByDay
 let data_by_month = DashBoardData.data.ByMonth
 let data_by_year = DashBoardData.data.ByYear
+
+
+
 
 const set_charts_data = function (filter_data) {
     // total
@@ -192,13 +195,17 @@ const set_charts_data = function (filter_data) {
 
 }
 
-
-//挂载时初始化图表
-onMounted(() => {
+const get_data = function () {
     // 获取用户权限
 
     // 根据权限，发送请求获取数据,并存入SessionStorage中
+}
 
+//挂载时初始化图表
+onMounted(() => {
+    //从后端获取数据
+    get_data();
+    
     //初始化图表，默认是按日
     set_charts_data(data_by_day)
 });

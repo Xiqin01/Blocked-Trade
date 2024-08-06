@@ -71,13 +71,13 @@ const param = reactive<LoginInfo>({
 // 输入用户名和密码的要求
 const rules: FormRules = {
     username: [
-        {
-            required: true,
-            message: '请输入用户名',
-            trigger: 'blur',
-        },
+        {required: true,message: '请输入用户名',trigger: 'blur'},
+        {pattern: /^[a-zA-Z]([a-zA-Z0-9])*$/,message: '用户名只能由字母开头,后面可以跟字母和数字',trigger: 'blur'}
     ],
-    password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+    password: [
+        { required: true, message: '请输入密码', trigger: 'blur' },
+        { min: 6, max: 14, message: '密码长度为 6~14 个字符', trigger: 'blur' }
+    ],
 };
 const permiss = usePermissStore();
 const login = ref<FormInstance>();

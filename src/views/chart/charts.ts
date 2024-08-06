@@ -4,7 +4,9 @@ import { tr } from 'element-plus/es/locale';
 import { ref } from 'vue';
 
 // 问题1:图形显示不全,老是偏移
-// 筛选变化
+export const TrappedCount = ref(0);
+
+export const TrappedAmount = ref(0);
 
 
 export const ReasonDist = ref({

@@ -115,7 +115,7 @@ import {
 } from "echarts/components";
 import { CanvasRenderer } from "echarts/renderers";
 import VChart from "vue-echarts";
-import { ReasonDist, Trend, mapOptions,CardDist,AmountDist} from "./chart/charts";  // 图片在这里
+import { TrappedCount,TrappedAmount, ReasonDist, Trend, mapOptions,CardDist,AmountDist} from "./chart/charts";  // 图片在这里
 // import { dashOpt1, dashOpt2, mapOptions } from "./chart/options";  // 图片备份
 import chinaMap from "@/utils/china";
 import { ref ,onMounted, watch } from "vue";
@@ -137,23 +137,36 @@ use([
 ]);
 registerMap("china", chinaMap);
 
+
 // 初始化元素
 let timeType = ref("day");
-let TrappedCount = ref(0);
-let TrappedAmount = ref(0);
+
+
+//读取本地数据
+// import DashBoardData from "../../data_example.json"
+// console.log(DashBoardData)
+
+
+// 异步请求数据
+async function initDashboardData(url) {
+  try {
+    // 请求数据
+    const response = await axios.get(url);
+    const data = response.data.data;
+    // 存储数据到本地
+    sessionStorage.setItem('data_by_day', JSON.stringify(data.ByDay));
+    sessionStorage.setItem('data_by_month', JSON.stringify(data.ByMonth));
+    sessionStorage.setItem('data_by_year', JSON.stringify(data.ByYear));
+    // 渲染图表
+    set_charts_data(JSON.parse(sessionStorage.getItem('data_by_day')))
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+}
 
 
 
-//假装：获取后端的数据
-import DashBoardData from "../../data_example.json"
-console.log(DashBoardData)
-let data_by_day = DashBoardData.data.ByDay
-let data_by_month = DashBoardData.data.ByMonth
-let data_by_year = DashBoardData.data.ByYear
-
-
-
-
+// 画图
 const set_charts_data = function (filter_data) {
     // total
     TrappedCount.value = filter_data.Total.TotalCount;
@@ -173,12 +186,12 @@ const set_charts_data = function (filter_data) {
     Trend.value.series[0].data = filter_data.TrendDist.amount;
     Trend.value.series[1].data = filter_data.TrendDist.count;
 
-    //amount
+    // amount
     AmountDist.value.xAxis.data = filter_data.AmountDist.AmountCut;
     AmountDist.value.series[0].data = filter_data.AmountDist.amount;
     AmountDist.value.series[1].data = filter_data.AmountDist.count;
 
-    //geo
+    // geo
     mapOptions.value.visualMap.max = Math.max.apply(null,filter_data.GeoDist.amount); // 设置视觉映射最大值
     console.log(mapOptions.value.visualMap.max)
     for (let i = 0; i <filter_data.GeoDist.Geo.length; i++) {
@@ -188,26 +201,22 @@ const set_charts_data = function (filter_data) {
         })
     }
 
-    //card
+    // card
     CardDist.value.xAxis[0].data = filter_data.CardDist.CardType;
     CardDist.value.series[0].data = filter_data.CardDist.amount;
     CardDist.value.series[1].data = filter_data.CardDist.count;
 
 }
 
-const get_data = function () {
-    // 获取用户权限
-
-    // 根据权限，发送请求获取数据,并存入SessionStorage中
-}
 
 //挂载时初始化图表
 onMounted(() => {
-    //从后端获取数据
-    get_data();
-    
-    //初始化图表，默认是按日
-    set_charts_data(data_by_day)
+    // 请求数据后端数据，渲染图表
+    let url = 'http://127.0.0.1:4523/m2/4924461-4581560-default/201110379'
+    initDashboardData(url);
+/*  用本地数据渲染图表
+    let data_by_day = DashBoardData.data.ByDay
+    set_charts_data(data_by_day) */
 });
 
 
@@ -220,17 +229,25 @@ watch(timeType, () => {
 const ChangeDashboardData = function (timeType) {
     if (timeType === "day") {
        // 切换成按日分布的数据
+       // let data_by_day = DashBoardData.data.ByDay
+       let data_by_day = JSON.parse(sessionStorage.getItem('data_by_day'));
        set_charts_data(data_by_day)
     }
     if (timeType === "month") {
         // 切换成按月分布的数据
+        // let data_by_month = DashBoardData.data.ByMonth
+        let data_by_month = JSON.parse(sessionStorage.getItem('data_by_month'))
         set_charts_data(data_by_month)
     }
     if (timeType === "year") {
         // 切换成按年分布的数据
+        // let data_by_year = DashBoardData.data.ByYear
+        let data_by_year = JSON.parse(sessionStorage.getItem('data_by_year'))
         set_charts_data(data_by_year)
     }
 };
+
+
 
 </script>
 

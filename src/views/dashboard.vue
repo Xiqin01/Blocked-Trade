@@ -19,7 +19,7 @@
                         <WalletFilled />
                     </el-icon>
                     <div class="card-content">
-                        <span class="card-num ">{{TrappedMoney}}</span>
+                        <span class="card-num ">{{TrappedAmount}}</span>
                         <!--<countup class="card-num " :end="6666" />--> <!-- 嵌入一个countup组件，检测动态变化 -->
                         <div>阻滞资金总额</div>
                     </div>
@@ -32,7 +32,7 @@
                         <Coin/>
                     </el-icon>
                     <div class="card-content">
-                         <span class="card-num ">{{TrappedAmount}}</span>
+                         <span class="card-num ">{{TrappedCount}}</span>
                         <!-- <countup class="card-num " :end="168" /> -->  <!-- 检测动态变化的 -->
                         <div>阻滞资金笔数</div>
                     </div>
@@ -105,22 +105,23 @@
 </template>
 
 <script setup lang="ts" name="dashboard">
-import countup from '@/components/countup.vue'; //实现数字动画效果
-import { use, registerMap } from 'echarts/core';
-import { BarChart, LineChart, PieChart, MapChart } from 'echarts/charts';
+import countup from "@/components/countup.vue"; //实现数字动画效果
+import { use, registerMap } from "echarts/core";
+import { BarChart, LineChart, PieChart, MapChart } from "echarts/charts";
 import {
     GridComponent,
     TooltipComponent,
     LegendComponent,
     TitleComponent,
     VisualMapComponent,
-} from 'echarts/components';
-import { CanvasRenderer } from 'echarts/renderers';
-import VChart from 'vue-echarts';
-import { ReasonDist, Trend, mapOptions,CardDist,AmountDist} from './chart/charts';  // 图片在这里
-// import { dashOpt1, dashOpt2, mapOptions } from './chart/options';  // 图片备份
-import chinaMap from '@/utils/china';
-import { ref ,onMounted, watch } from 'vue';
+} from "echarts/components";
+import { CanvasRenderer } from "echarts/renderers";
+import VChart from "vue-echarts";
+import { ReasonDist, Trend, mapOptions,CardDist,AmountDist} from "./chart/charts";  // 图片在这里
+// import { dashOpt1, dashOpt2, mapOptions } from "./chart/options";  // 图片备份
+import chinaMap from "@/utils/china";
+import { ref ,onMounted, watch } from "vue";
+import axios from "axios";
 
 
 // 注册画图组件
@@ -136,35 +137,70 @@ use([
     VisualMapComponent,
     MapChart,
 ]);
-registerMap('china', chinaMap);
+registerMap("china", chinaMap);
 
 // 初始化元素
-const timeType = ref('day');
-let TrappedMoney = ref(0);
+let timeType = ref("day");
+let TrappedCount = ref(0);
 let TrappedAmount = ref(0);
 
-//假装：获取后端的数据，并存入SessionStorage中
-let ReasonData = {dataType:'reason',
-        value:[ 
-        { value: [1048,200], name: 'Reason 1'},
-        { value: [735,200], name: 'Reason 2' },
-        { value: [580,200], name: 'Reason 3' },
-        { value: [484,200], name: 'Reason 4' },
-        { value: [300,200], name: 'Reason 5' },
-        ]}
+//假装：获取后端的数据
+import DashBoardData from "../../data_example.json"
+console.log(DashBoardData)
+let data_by_day = DashBoardData.data.ByDay
+let data_by_month = DashBoardData.data.ByMonth
+let data_by_year = DashBoardData.data.ByYear
+
+const set_charts_data = function (filter_data) {
+    // total
+    TrappedCount.value = filter_data.Total.TotalCount;
+    TrappedAmount.value = filter_data.Total.TotalAmount;
+
+    //reason
+    ReasonDist.value.series[0].data = [];
+    for (let i = 0; i <filter_data.ReasonsDist.reasons.length; i++) {
+        ReasonDist.value.series[0].data.push({
+            name: filter_data.ReasonsDist.reasons[i],
+            value: [filter_data.ReasonsDist.amount[i], filter_data.ReasonsDist.count[i]]
+        })
+    }
+
+    // trend
+    Trend.value.xAxis.data = filter_data.TrendDist.Time;
+    Trend.value.series[0].data = filter_data.TrendDist.amount;
+    Trend.value.series[1].data = filter_data.TrendDist.count;
+
+    //amount
+    AmountDist.value.xAxis.data = filter_data.AmountDist.AmountCut;
+    AmountDist.value.series[0].data = filter_data.AmountDist.amount;
+    AmountDist.value.series[1].data = filter_data.AmountDist.count;
+
+    //geo
+    mapOptions.value.visualMap.max = Math.max.apply(null,filter_data.GeoDist.amount); // 设置视觉映射最大值
+    console.log(mapOptions.value.visualMap.max)
+    for (let i = 0; i <filter_data.GeoDist.Geo.length; i++) {
+        mapOptions.value.series[0].data.push({
+            name: filter_data.GeoDist.Geo[i],
+            value: [filter_data.GeoDist.amount[i], filter_data.GeoDist.count[i]]
+        })
+    }
+
+    //card
+    CardDist.value.xAxis[0].data = filter_data.CardDist.CardType;
+    CardDist.value.series[0].data = filter_data.CardDist.amount;
+    CardDist.value.series[1].data = filter_data.CardDist.count;
+
+}
 
 
-
-//阻滞资金金额和比数
+//挂载时初始化图表
 onMounted(() => {
     // 获取用户权限
 
     // 根据权限，发送请求获取数据,并存入SessionStorage中
 
-    // 初始化数据
-    TrappedMoney.value = 6666;
-    TrappedAmount.value = 8888;
-    ReasonDist.value.series[0].data = ReasonData.value; 
+    //初始化图表，默认是按日
+    set_charts_data(data_by_day)
 });
 
 
@@ -175,51 +211,17 @@ watch(timeType, () => {
 });
 
 const ChangeDashboardData = function (timeType) {
-    if (timeType === 'day') {
+    if (timeType === "day") {
        // 切换成按日分布的数据
-       TrappedMoney.value = 6666;
-       TrappedAmount.value = 8888;
-       ReasonDist.value.series[0].data = [
-        { value: [1048,200], name: 'Reason 1', },
-        { value: [735,200], name: 'Reason 2' },
-        { value: [580,200], name: 'Reason 3' },
-        { value: [484,200], name: 'Reason 4' },
-        { value: [300,200], name: 'Reason 5' },
-        ];  
-        Trend.value.xAxis.data = ['day1', 'day2', 'day3', 'day4', 'day5', 'day6', 'day7'];
-        Trend.value.series[0].data = [1200, 1320, 3010, 1340, 900, 2300, 2100] ;
-        Trend.value.series[1].data = [220, 122, 191, 234, 190, 130, 310];
+       set_charts_data(data_by_day)
     }
-
-    if (timeType === 'month') {
+    if (timeType === "month") {
         // 切换成按月分布的数据
-        TrappedMoney.value = 66660;
-        TrappedAmount.value = 99990;
-        ReasonDist.value.series[0].data = [
-            { name: '原因1', value:[5000,50] },
-            { name: '原因2', value:[4000,50] },
-            { name: '原因3', value:[3000,50] },
-            { name: '原因4', value:[2000,50] },
-            { name: '原因5', value:[1000,50] },
-        ];  
-        Trend.value.xAxis.data = ['month1', 'month2', 'month3', 'month4', 'month5'];
-        Trend.value.series[0].data = [5000, 4000, 3000, 2000, 1000] ;
-        Trend.value.series[1].data = [510, 450, 540, 503, 50] ;
-        
+        set_charts_data(data_by_month)
     }
-    
-
-    if (timeType === 'year') {
+    if (timeType === "year") {
         // 切换成按年分布的数据
-        TrappedMoney.value = 666600;
-        TrappedAmount.value = 888800;
-        ReasonDist.value.series[0].data = [
-            { name: '原因1', value:[10000,50] },
-            { name: '原因2', value:[20000,50] },
-            { name: '原因3', value:[30000,50] },
-            { name: '原因4', value:[40000,50] },
-            { name: '原因5', value:[50000,50] },
-        ];  
+        set_charts_data(data_by_year)
     }
 };
 

@@ -98,14 +98,14 @@ export const Trend = ref({
                 ]),
             },
             smooth: true,
-            data: [1200, 1320, 3010, 1340, 900, 2300, 2100],
+            data: [],
 
         },
         {
             name :'受阻交易笔数',
             type: 'line',
             smooth: true,
-            data: [220, 122, 191, 234, 190, 130, 310],
+            data: [],
             yAxisIndex: 1
 
         },
@@ -142,7 +142,7 @@ export const mapOptions = ref({
     visualMap: {
         show: false,
         min: 0,
-        max: 100,
+        max: 1000,
         realtime: false,
         calculable: false,
         dimension: 0,
@@ -158,21 +158,21 @@ export const mapOptions = ref({
             coordinateSystem: 'geo',
             map: 'china',
             data: [
-                { name: '北京', value: [100,20] },
-                { name: '上海', value: [100,20] },
-                { name: '广东', value: [100,20] },
-                { name: '浙江', value: [90 ,20]},
-                { name: '江西', value: [80 ,20]},
-                { name: '山东', value: [70 ,20]},
-                { name: '广西', value: [60 ,20]},
-                { name: '河南', value: [50 ,20]},
-                { name: '河南', value: [40 ,20]},
-                { name: '青海', value: [70 ,20]},
-                { name: '河南', value: [30 ,20]},
-                { name: '黑龙江', value: [20 ,20]},
-                { name: '新疆', value: [20 ,20]},
-                { name: '云南', value: [20 ,20]},
-                { name: '甘肃', value: [20 ,20]},
+                // { name: '北京', value: [100,20] },
+                // { name: '上海', value: [100,20] },
+                // { name: '广东', value: [100,20] },
+                // { name: '浙江', value: [90 ,20]},
+                // { name: '江西', value: [80 ,20]},
+                // { name: '山东', value: [70 ,20]},
+                // { name: '广西', value: [60 ,20]},
+                // { name: '河南', value: [50 ,20]},
+                // { name: '河南', value: [40 ,20]},
+                // { name: '青海', value: [70 ,20]},
+                // { name: '河南', value: [30 ,20]},
+                // { name: '黑龙江', value: [20 ,20]},
+                // { name: '新疆', value: [20 ,20]},
+                // { name: '云南', value: [20 ,20]},
+                // { name: '甘肃', value: [20 ,20]},
             ],
         },
     ],
@@ -217,7 +217,7 @@ export const AmountDist = ref({
     color: ['#E64747','rgba(255, 140, 54 ,0.6)' ],
     series: [
         {
-            data: [1200, 2000, 1500, 800, 700],
+            data: [],
             type: 'bar',
             name:'受阻资金总额',
             barWidth: '50%',
@@ -225,7 +225,7 @@ export const AmountDist = ref({
            
         },
         {
-            data: [180, 230, 190, 120, 110],
+            data: [],
             type: 'line',
             name:'受阻交易笔数',
             yAxisIndex: 1
@@ -250,7 +250,7 @@ export const CardDist = ref({
     xAxis: [
         {
             type: 'category',
-            data: ['白卡', '黄卡', '银卡', '金卡', '钻石卡'],
+            data: [],
             // name: '卡种',
             axisLabel: {
                 rotate: -45, // 旋转45度
@@ -284,12 +284,12 @@ export const CardDist = ref({
     color: ['#E64747', 'rgba(253,145,116,1.000)'], // 用rgba柱子不会消失
     series: [
         {
-            data: [1200, 2000, 5000, 6800, 7000],
+            data: [],
             type: 'bar',
             name: '受阻资金总额',
         },
         {
-            data: [180, 230, 190, 120, 110],
+            data: [],
             type: 'bar',
             name: '受阻交易笔数',
             yAxisIndex: 1,
